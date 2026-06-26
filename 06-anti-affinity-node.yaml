@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: antiaffinity
+  labels: 
+    purpose: "node antiaffinity check"
+
+spec: 
+  affinity: 
+    nodeAffinity: 
+       requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: hardware
+            operator: NotIn #anti-affinity
+            values:
+            - gpu
+  containers:
+  - name: nginx
+    image: nginx
+  tolerations:  # tolerations explicitly allow to create pod in that node if it is tainted 
+  - key: "hardware"
+    operator: "Equal"
+    value: "gpu"
+    effect: "NoExecute"
